@@ -1,0 +1,36 @@
+name: box
+
+shape_meta: &shape_meta
+  # acceptable types: rgb, low_dim
+  obs:
+    image_main:
+      shape: [3, 224, 224]
+      type: rgb
+      horizon: 2
+    point_cloud:
+      shape: [4096, 3]
+      type: point_cloud
+      horizon: 2
+    depth:
+      shape: [4096, 3]
+      type: point_cloud
+    agent_pos:
+      shape: [2]
+      type: low_dim
+      horizon: 2
+    instruction:
+      shape: [768]
+      type: low_dim
+  action:
+    shape: [2]
+    horizon: 15
+
+
+dataset:
+  _target_: diffusion_policy_3d.dataset.marsmind_base.MarsmindBaseDataset
+  data_path: /media/Image_Lab/embod_data/MarsMind_data
+  task_name: move
+  pad_before: ${eval:'${n_obs_steps}-1'}
+  pad_after: ${eval:'${n_action_steps}-1'}
+  use_instruction: False
+  num_points: ${policy.pointcloud_encoder_cfg.num_points}
